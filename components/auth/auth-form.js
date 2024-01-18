@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import classes from "./auth-form.module.css";
 import Notification from "../../ui/notification";
+import { signIn } from "next-auth/react";
 
 async function createUser(email, password) {
   const response = await fetch("/api/auth/signup", {
@@ -42,7 +43,7 @@ const getNotificationObject = (requestStatus, requestError) => {
       notification = {
         status: "error",
         title: "Error!",
-        error: requestError,
+        message: requestError,
       };
       break;
   }
@@ -105,6 +106,15 @@ function AuthForm() {
 
     if (isLogin) {
       // log user in
+      const result = await signIn("credentials", {
+        redirect: false,
+        email: enteredEmail,
+        password: enteredPassword,
+      });
+      console.log(result);
+      if (!result.error) {
+        // set some auth state
+      }
     } else {
       // create a new user
       setRequestStatus("pending");
