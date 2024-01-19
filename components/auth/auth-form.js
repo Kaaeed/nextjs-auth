@@ -94,10 +94,14 @@ function AuthForm() {
         email: enteredEmail,
         password: enteredPassword,
       });
-      formRef.current.reset();
+
       if (!result.error) {
         // set some auth state
+        // formRef.current.reset();
         router.replace("/profile");
+      } else {
+        setRequestError(`${result.error} Wrong credentials!`);
+        setRequestStatus("error");
       }
     } else {
       // create a new user
