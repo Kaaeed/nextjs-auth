@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import classes from "./auth-form.module.css";
 import Notification from "../../ui/notification";
 import { signIn } from "next-auth/react";
+import { useRouter } from "next/router";
 
 async function createUser(email, password) {
   const response = await fetch("/api/auth/signup", {
@@ -48,26 +49,6 @@ const getNotificationObject = (requestStatus, requestError) => {
       break;
   }
 
-  // if (requestStatus === ) {
-  //   notification = {
-  //     status: "pending",
-  //     title: "Sending request...",
-  //     message: "Your request is on the way!",
-  //   };
-  // } else if (requestStatus === "success"){
-  //   notification = {
-  //     status: "success",
-  //     title: "Success!",
-  //     message: "Request sent successfully!"
-  //   }
-  // } else if (requestStatus === "error"){
-  //   notification = {
-  //     status: "error",
-  //     title: "Error!",
-  //     error: requestError
-  //   }
-  // }
-
   return notification;
 };
 
@@ -79,6 +60,8 @@ function AuthForm() {
   const [isLogin, setIsLogin] = useState(true);
   const [requestStatus, setRequestStatus] = useState(); // "pending", "success", "error"
   const [requestError, setRequestError] = useState();
+
+  const router = useRouter();
 
   useEffect(() => {
     if (requestStatus === "success" || requestStatus === "error") {
@@ -111,9 +94,10 @@ function AuthForm() {
         email: enteredEmail,
         password: enteredPassword,
       });
-      console.log(result);
+      formRef.current.reset();
       if (!result.error) {
         // set some auth state
+        router.replace("/profile");
       }
     } else {
       // create a new user
@@ -149,7 +133,9 @@ function AuthForm() {
           />
         </div>
         <div className={classes.actions}>
-          <button>{isLogin ? "Login" : "Create Account"}</button>
+          <button type="submit" disabled={requestStatus === "pending"}>
+            {isLogin ? "Login" : "Create Account"}
+          </button>
           <button
             type="button"
             className={classes.toggle}
